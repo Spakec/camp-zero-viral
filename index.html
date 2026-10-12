@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Camp Zero · Viral Finds</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2310a37f'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='none' stroke='white' stroke-width='3.2'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --surface-2:#f0f2ef; --line:#e3e6e1;
+  --text:#151a17; --muted:#5d665f; --faint:#8c948e;
+  --accent:#0f9a76; --accent-ink:#ffffff; --accent-soft:#e2f4ee;
+  --new:#e8590c; --new-soft:#fff1e6; --warn:#b45309;
+  --shadow:0 1px 2px rgba(20,30,25,.05),0 4px 16px rgba(20,30,25,.05);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1210; --surface:#151a17; --surface-2:#1c2320; --line:#29312d;
+    --text:#e9eeeb; --muted:#a3ada7; --faint:#6f7a74;
+    --accent:#34c79c; --accent-ink:#06130e; --accent-soft:#163029;
+    --new:#ff8a3d; --new-soft:#33210f; --warn:#f0a050;
+    --shadow:none; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1210; --surface:#151a17; --surface-2:#1c2320; --line:#29312d;
+  --text:#e9eeeb; --muted:#a3ada7; --faint:#6f7a74;
+  --accent:#34c79c; --accent-ink:#06130e; --accent-soft:#163029;
+  --new:#ff8a3d; --new-soft:#33210f; --warn:#f0a050;
+  --shadow:none; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:28px 16px 64px}
+
+/* header */
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:40px;height:40px;border-radius:11px;background:var(--accent);display:grid;place-items:center;flex:none}
+.logo i{width:18px;height:18px;border:3.5px solid var(--accent-ink);border-radius:50%;display:block}
+h1{font-size:22px;line-height:1.15;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:3px 0 0;font-size:13px}
+.live{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--accent);animation:pulse 2.4s infinite}
+.live.stale .dot{background:var(--warn);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.criteria{margin:16px 0 0;color:var(--muted);font-size:13px}
+.criteria b{color:var(--text);font-weight:600}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0 18px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.stat .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-size:22px;font-weight:650;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat .v small{font-size:12px;color:var(--muted);font-weight:500}
+
+/* controls */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.search{flex:1 1 240px;min-width:0;position:relative}
+.search input{width:100%;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:0 12px 0 34px;font:inherit}
+.search svg{position:absolute;left:11px;top:10px;width:16px;height:16px;color:var(--faint)}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:2px}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;padding:6px 11px;border-radius:7px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.08);font-weight:600}
+select,.btn{height:36px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;font-size:13px;padding:0 10px;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:6px}
+.btn:hover,select:hover{border-color:var(--faint)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer;font:inherit;font-size:12px}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
+
+/* table */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;text-align:right;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+thead th:nth-child(1),thead th:nth-child(2){text-align:left}
+tbody td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr.fresh{animation:flash 2.8s ease-out}
+@keyframes flash{0%{background:var(--new-soft)}100%{background:transparent}}
+td.thumb{width:64px;padding-right:0}
+.cover{width:56px;height:76px;border-radius:8px;object-fit:cover;background:var(--surface-2);display:block}
+.cover.none{display:grid;place-items:center;color:var(--faint);font-size:20px}
+td.post{text-align:left;white-space:normal;min-width:260px;max-width:440px}
+.who{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.who a{font-weight:600;text-decoration:none}
+.who a:hover{text-decoration:underline}
+.who .fol{color:var(--faint);font-size:12px}
+.cap{color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px}
+.tags{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.tag{font-size:11px;border-radius:6px;padding:1px 7px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.tag.type{color:var(--text)}
+.tag.newb{background:var(--new);border-color:var(--new);color:#fff;font-weight:700;letter-spacing:.04em}
+.big{font-weight:650;font-size:15px}
+.grow{display:block;font-size:11.5px;color:var(--accent);font-weight:600}
+.dim{color:var(--faint);font-size:12px;display:block}
+.open{color:var(--accent);text-decoration:none;font-weight:600}
+
+.empty{padding:48px 16px;text-align:center;color:var(--muted)}
+.foot{margin-top:18px;color:var(--faint);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.foot button{background:none;border:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer;padding:0}
+
+/* phone: rows become cards */
+@media (max-width:820px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  thead{display:none}
+  table,tbody,tr,td{display:block}
+  tbody tr{display:grid;grid-template-columns:72px 1fr;grid-template-areas:"thumb post" "nums nums";column-gap:12px;padding:12px;border-bottom:1px solid var(--line)}
+  tbody td{border:0;padding:0;text-align:left}
+  td.thumb{grid-area:thumb;width:auto}
+  .cover{width:72px;height:98px}
+  td.post{grid-area:post;min-width:0;max-width:none}
+  td.num{display:none}
+  td.nums{display:grid!important;grid-area:nums;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin-top:10px;white-space:normal}
+  td.nums div{font-size:13px}
+  td.nums div span{display:block;font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
+}
+td.nums{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><i></i></div>
+      <div>
+        <h1>Camp Zero · Viral Finds</h1>
+        <p class="sub">Proven quitting content on TikTok, collected automatically</p>
+      </div>
+    </div>
+    <div class="live" id="live" title="The page checks for new finds every 90 seconds — no need to reload."><span class="dot"></span><span id="liveText">Loading…</span></div>
+  </header>
+
+  <p class="criteria" id="criteria">Zyn &amp; nicotine pouches, vaping, smoking, alcohol and caffeine — videos and slideshows.</p>
+
+  <section class="stats" id="stats" aria-label="Summary"></section>
+
+  <div class="controls">
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search captions, creators, keywords" aria-label="Search">
+    </label>
+    <div class="seg" role="group" aria-label="Type" id="typeSeg">
+      <button data-type="all" aria-pressed="true">All</button>
+      <button data-type="video" aria-pressed="false">Videos</button>
+      <button data-type="slideshow" aria-pressed="false">Slideshows</button>
+    </div>
+    <select id="sort" aria-label="Sort">
+      <option value="found">Newest found</option>
+      <option value="views">Most views</option>
+      <option value="eng">Highest engagement</option>
+      <option value="saves">Most saves</option>
+      <option value="posted">Newest posted</option>
+      <option value="growth">Fastest growing</option>
+    </select>
+    <button class="btn" id="csv" type="button">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>CSV
+    </button>
+  </div>
+  <div class="chips" id="chips" aria-label="Search keyword"></div>
+
+  <div class="card">
+    <table>
+      <thead><tr>
+        <th></th><th>Post</th><th>Views</th><th>Likes</th><th>Saves</th><th>Shares</th><th>Comments</th><th title="(likes + comments + shares + saves) ÷ views">Eng.</th><th>Posted</th><th>Found</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden></div>
+  </div>
+
+  <div class="foot">
+    <span id="footNote"></span>
+    <span><button id="theme" type="button">Toggle dark mode</button></span>
+  </div>
+</div>
+
+<script>
+(() => {
+  const OWNER = "Spakec", REPO = "camp-zero-viral", BRANCH = "data";
+  const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}`;
+  const API = `https://api.github.com/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`;
+  const POLL_MS = 90_000;
+
+  const $ = id => document.getElementById(id);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  let feed = null, sha = null, apiPausedUntil = 0, lastOk = 0;
+  let known = null;            // ids on screen, to spot live arrivals
+  const fresh = new Set();     // arrived while the page was open
+  const flash = new Set();     // to highlight on the next render only
+  let unseen = 0;              // arrivals since the tab was last looked at
+  const prevVisit = Number(store.get("cz_last_visit") || 0);
+  const state = { q: "", type: "all", sort: store.get("cz_sort") || "found", kw: "" };
+
+  // ---------- formatting ----------
+  const fmt = n => {
+    if (n == null || isNaN(n)) return "—";
+    const a = Math.abs(n);
+    if (a >= 1e6) return (n / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace(/\.0$/, "") + "M";
+    if (a >= 1e3) return (n / 1e3).toFixed(a >= 1e5 ? 0 : 1).replace(/\.0$/, "") + "K";
+    return String(n);
+  };
+  const ago = t => {
+    const s = Math.max(0, (Date.now() - t) / 1000);
+    if (s < 90) return "just now";
+    if (s < 3600) return Math.round(s / 60) + " min ago";
+    if (s < 86400 * 1.5) return Math.round(s / 3600) + " h ago";
+    return Math.round(s / 86400) + " d ago";
+  };
+  const day = t => new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const safeUrl = u => /^https:\/\/([a-z0-9-]+\.)*tiktok\.com\//i.test(u || "") ? u : null;
+  const dur = s => s == null ? "" : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+  const eng = it => it.views ? ((it.likes || 0) + (it.comments || 0) + (it.shares || 0) + (it.saves || 0)) / it.views : null;
+  const growth = it => (it.views != null && it.viewsAtFind != null) ? it.views - it.viewsAtFind : 0;
+  const t = s => s ? Date.parse(s) : 0;
+
+  // ---------- data ----------
+  async function headSha() {
+    if (Date.now() < apiPausedUntil) return null;
+    try {
+      const r = await fetch(API, { cache: "no-store" });
+      if (!r.ok) throw new Error(r.status);
+      return (await r.json()).object.sha;
+    } catch {
+      // Rate-limited (60 an hour per network) or offline: read the branch
+      // directly for a while — at most ~5 minutes behind.
+      apiPausedUntil = Date.now() + 15 * 60_000;
+      return null;
+    }
+  }
+
+  async function load() {
+    const head = await headSha();
+    if (head && head === sha && feed) { lastOk = Date.now(); renderLive(); return; }
+    try {
+      const url = head ? `${RAW}/${head}/feed.json` : `${RAW}/${BRANCH}/feed.json`;
+      const r = await fetch(url, { cache: head ? "force-cache" : "no-cache" });
+      if (!r.ok) throw new Error(r.status);
+      const next = await r.json();
+      if (head) sha = head;
+      lastOk = Date.now();
+      accept(next);
+    } catch {
+      renderLive(true);
+    }
+  }
+
+  function accept(next) {
+    const ids = new Set(next.items.map(i => i.id));
+    if (known) {
+      for (const it of next.items) if (!known.has(it.id)) {
+        fresh.add(it.id);
+        flash.add(it.id);
+        if (document.hidden) unseen++;
+      }
+    }
+    known = ids;
+    feed = next;
+    render();
+  }
+
+  // ---------- render ----------
+  function filtered() {
+    const q = state.q.trim().toLowerCase();
+    let items = feed.items.filter(it =>
+      (state.type === "all" || it.type === state.type) &&
+      (!state.kw || it.keyword === state.kw) &&
+      (!q || [it.caption, it.author, it.keyword].some(f => (f || "").toLowerCase().includes(q))));
+    const by = {
+      found: (a, b) => t(b.foundAt) - t(a.foundAt),
+      views: (a, b) => (b.views || 0) - (a.views || 0),
+      eng: (a, b) => (eng(b) || 0) - (eng(a) || 0),
+      saves: (a, b) => (b.saves || 0) - (a.saves || 0),
+      posted: (a, b) => t(b.postedAt) - t(a.postedAt),
+      growth: (a, b) => growth(b) - growth(a),
+    }[state.sort];
+    return items.sort(by);
+  }
+
+  const isNew = it => fresh.has(it.id) || (prevVisit && t(it.foundAt) > prevVisit);
+
+  function row(it) {
+    const url = safeUrl(it.url);
+    const cover = it.cover
+      ? `<img class="cover" loading="lazy" alt="" src="${RAW}/${BRANCH}/${esc(it.cover)}">`
+      : `<div class="cover none">${it.type === "slideshow" ? "▦" : "▶"}</div>`;
+    const typeTag = it.type === "slideshow"
+      ? `Slideshow${it.slides ? ` · ${it.slides}` : ""}`
+      : `Video${it.durationSec != null ? ` · ${dur(it.durationSec)}` : ""}`;
+    const g = growth(it);
+    const e = eng(it);
+    const authorUrl = it.author ? `https://www.tiktok.com/@${encodeURIComponent(it.author)}` : null;
+    return `<tr data-url="${esc(url || "")}" class="${flash.has(it.id) ? "fresh" : ""}">
+      <td class="thumb">${cover}</td>
+      <td class="post">
+        <div class="who">${authorUrl ? `<a href="${authorUrl}" target="_blank" rel="noopener">@${esc(it.author)}</a>` : "<span>unknown</span>"}
+          ${it.authorFollowers != null ? `<span class="fol">${fmt(it.authorFollowers)} followers</span>` : ""}</div>
+        <div class="cap">${esc(it.caption || "")}</div>
+        <div class="tags">
+          ${isNew(it) ? `<span class="tag newb">NEW</span>` : ""}
+          <span class="tag type">${typeTag}</span>
+          ${it.keyword ? `<span class="tag">“${esc(it.keyword)}”</span>` : (it.source === "fyp" ? `<span class="tag">For You</span>` : "")}
+        </div>
+      </td>
+      <td class="num"><span class="big">${fmt(it.views)}</span>${g > 0 ? `<span class="grow">+${fmt(g)} since found</span>` : ""}</td>
+      <td class="num">${fmt(it.likes)}</td>
+      <td class="num">${fmt(it.saves)}</td>
+      <td class="num">${fmt(it.shares)}</td>
+      <td class="num">${fmt(it.comments)}</td>
+      <td class="num">${e == null ? "—" : (e * 100).toFixed(1) + "%"}</td>
+      <td class="num">${it.postedAt ? `${day(t(it.postedAt))}<span class="dim">${ago(t(it.postedAt))}</span>` : "—"}</td>
+      <td class="num">${ago(t(it.foundAt))}</td>
+      <td class="nums">
+        <div><span>Views</span><b>${fmt(it.views)}</b></div>
+        <div><span>Likes</span>${fmt(it.likes)}</div>
+        <div><span>Saves</span>${fmt(it.saves)}</div>
+        <div><span>Shares</span>${fmt(it.shares)}</div>
+        <div><span>Eng.</span>${e == null ? "—" : (e * 100).toFixed(1) + "%"}</div>
+        <div><span>Posted</span>${it.postedAt ? ago(t(it.postedAt)) : "—"}</div>
+      </td>
+    </tr>`;
+  }
+
+  function renderStats() {
+    const items = feed.items;
+    const day1 = Date.now() - 86400_000;
+    const new24 = items.filter(i => t(i.foundAt) > day1).length;
+    const vids = items.filter(i => i.type === "video").length;
+    const top = items.reduce((m, i) => Math.max(m, i.views || 0), 0);
+    const engs = items.map(eng).filter(x => x != null).sort((a, b) => a - b);
+    const med = engs.length ? engs[Math.floor(engs.length / 2)] : null;
+    $("stats").innerHTML = `
+      <div class="stat"><div class="k">Finds</div><div class="v">${items.length} <small>${vids} videos · ${items.length - vids} slideshows</small></div></div>
+      <div class="stat"><div class="k">Last 24 h</div><div class="v">${new24}</div></div>
+      <div class="stat"><div class="k">Top views</div><div class="v">${fmt(top)}</div></div>
+      <div class="stat"><div class="k">Median eng.</div><div class="v">${med == null ? "—" : (med * 100).toFixed(1) + "%"}</div></div>`;
+    const c = $("criteria");
+    c.innerHTML = `Zyn &amp; nicotine pouches, vaping, smoking, alcohol and caffeine — videos and slideshows with <b>${fmt(feed.minViews)}+ views</b>, posted in the <b>last ${Math.round(feed.maxAgeDays / 30)} months</b>.`;
+  }
+
+  function renderChips() {
+    const counts = {};
+    for (const it of feed.items) if (it.keyword) counts[it.keyword] = (counts[it.keyword] || 0) + 1;
+    const kws = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    if (state.kw && !counts[state.kw]) state.kw = "";
+    $("chips").innerHTML = kws.length < 2 ? "" :
+      [`<button class="chip" data-kw="" aria-pressed="${!state.kw}">All keywords</button>`]
+        .concat(kws.map(([k, n]) => `<button class="chip" data-kw="${esc(k)}" aria-pressed="${state.kw === k}">${esc(k)} · ${n}</button>`))
+        .join("");
+  }
+
+  function renderLive(failed) {
+    const el = $("live");
+    if (!feed) { $("liveText").textContent = failed ? "Couldn't load — retrying" : "Loading…"; el.classList.toggle("stale", !!failed); return; }
+    const updated = t(feed.updatedAt);
+    const stale = failed || Date.now() - lastOk > 10 * 60_000;
+    el.classList.toggle("stale", stale);
+    $("liveText").textContent = (stale ? "Reconnecting · " : "Live · ") + "updated " + ago(updated);
+    const newest = feed.items.reduce((m, i) => Math.max(m, t(i.foundAt)), 0);
+    $("footNote").textContent = newest ? `Last find ${ago(newest)} · click a row to open it on TikTok` : "";
+    document.title = (unseen ? `(${unseen}) ` : "") + "Camp Zero · Viral Finds";
+  }
+
+  function render() {
+    if (!feed) return;
+    renderStats();
+    renderChips();
+    const items = filtered();
+    $("rows").innerHTML = items.map(row).join("");
+    flash.clear();
+    const empty = $("empty");
+    empty.hidden = items.length > 0;
+    if (!items.length) empty.textContent = feed.items.length ? "Nothing matches these filters." : "No finds yet — they appear here the moment the bot finds one.";
+    renderLive();
+  }
+
+  // ---------- CSV ----------
+  function csv() {
+    if (!feed) return;
+    const cols = ["found_at", "posted_at", "type", "author", "author_followers", "views", "views_when_found", "likes", "comments", "saves", "shares", "engagement_pct", "keyword", "caption", "url"];
+    const q = v => { const s = v == null ? "" : String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+    const lines = [cols.join(",")].concat(filtered().map(it => [
+      it.foundAt, it.postedAt, it.type, it.author, it.authorFollowers, it.views, it.viewsAtFind, it.likes, it.comments,
+      it.saves, it.shares, eng(it) == null ? "" : (eng(it) * 100).toFixed(2), it.keyword, it.caption, it.url,
+    ].map(q).join(",")));
+    const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `camp-zero-viral-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+
+  // ---------- events ----------
+  $("q").addEventListener("input", e => { state.q = e.target.value; render(); });
+  $("typeSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.type = b.dataset.type;
+    for (const x of $("typeSeg").children) x.setAttribute("aria-pressed", x === b);
+    render();
+  });
+  $("sort").value = state.sort;
+  $("sort").addEventListener("change", e => { state.sort = e.target.value; store.set("cz_sort", state.sort); render(); });
+  $("chips").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; state.kw = b.dataset.kw; render(); });
+  $("csv").addEventListener("click", csv);
+  $("rows").addEventListener("click", e => {
+    if (e.target.closest("a")) return;
+    const tr = e.target.closest("tr"); const u = tr && tr.dataset.url;
+    if (u) window.open(u, "_blank", "noopener");
+  });
+  $("theme").addEventListener("click", () => {
+    const dark = document.documentElement.dataset.theme
+      ? document.documentElement.dataset.theme === "dark"
+      : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = dark ? "light" : "dark";
+    store.set("cz_theme", document.documentElement.dataset.theme);
+  });
+  const savedTheme = store.get("cz_theme");
+  if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return;
+    unseen = 0;
+    renderLive();
+    load();
+  });
+  window.addEventListener("pagehide", () => store.set("cz_last_visit", String(Date.now())));
+
+  load();
+  // Keeps polling in a background tab too, so the tab title can count
+  // what arrived while nobody was looking.
+  setInterval(load, POLL_MS);
+  setInterval(() => { if (feed) renderLive(); }, 30_000);
+})();
+</script>
+</body>
+</html>
