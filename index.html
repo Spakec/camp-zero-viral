@@ -56,7 +56,7 @@ h1{font-size:22px;line-height:1.15;margin:0;letter-spacing:-.01em}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
 .stat .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
 .stat .v{font-size:22px;font-weight:650;margin-top:2px;font-variant-numeric:tabular-nums}
-.stat .v small{font-size:12px;color:var(--muted);font-weight:500}
+.stat .k2{font-size:12px;color:var(--muted)}
 
 /* controls */
 .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
@@ -342,7 +342,7 @@ td.nums{display:none}
     const engs = items.map(eng).filter(x => x != null).sort((a, b) => a - b);
     const med = engs.length ? engs[Math.floor(engs.length / 2)] : null;
     $("stats").innerHTML = `
-      <div class="stat"><div class="k">Finds</div><div class="v">${items.length} <small>${vids} videos · ${items.length - vids} slideshows</small></div></div>
+      <div class="stat"><div class="k">Finds</div><div class="v">${items.length}</div><div class="k2">${vids} video${vids === 1 ? "" : "s"} · ${items.length - vids} slideshow${items.length - vids === 1 ? "" : "s"}</div></div>
       <div class="stat"><div class="k">Last 24 h</div><div class="v">${new24}</div></div>
       <div class="stat"><div class="k">Top views</div><div class="v">${fmt(top)}</div></div>
       <div class="stat"><div class="k">Median eng.</div><div class="v">${med == null ? "—" : (med * 100).toFixed(1) + "%"}</div></div>`;
