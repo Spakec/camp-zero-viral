@@ -6,3 +6,4 @@ TikTok posts about quitting Zyn / nicotine pouches, vaping, smoking, alcohol and
 
 - `main` branch: the page (`index.html`).
 - `data` branch: `feed.json` plus a cover image for each post. A bot rewrites this branch whenever it finds something new, so don't edit it by hand.
+- `apify/` on `main`: a one-off Apify snapshot for the **APIFY finds** tab (`#apify`) — every 2026 TikTok result for "quitting zyn", with outlier scores against each creator's last 30 posts, hooks/transcripts for the top outliers, and covers. Static; the bot doesn't touch it.
