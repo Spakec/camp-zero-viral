@@ -165,6 +165,7 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
   <nav class="tabs" role="tablist" aria-label="View">
     <button role="tab" id="tabLive" aria-controls="viewLive" aria-selected="true">Viral Finds</button>
     <button role="tab" id="tabApify" aria-controls="viewApify" aria-selected="false">APIFY finds</button>
+    <button role="tab" id="tabApps" aria-controls="viewApify" aria-selected="false">Quit-app videos</button>
   </nav>
 
   <section id="viewLive" role="tabpanel" aria-labelledby="tabLive">
@@ -520,37 +521,43 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
 })();
 </script>
 <script>
-// APIFY finds: a one-off snapshot in apify/ on main, loaded the first time the tab opens.
+// APIFY finds: one-off snapshots in apify/ on main, each loaded the first time it's shown.
 (() => {
   const { store, fmt, ago, day, esc, safeUrl, dur, eng, t } = window.cz;
-  const DATA = "apify/quitting-zyn-2026.json";
   const $ = id => document.getElementById(id);
 
+  const DATASETS = {
+    zyn: {
+      file: "apify/quitting-zyn-2026.json",
+      filters: [["", "All"], ["outlier", "Outliers"], ["organic", "Organic"], ["app", "App promo"], ["hook", "With hook / transcript"]],
+    },
+    apps: {
+      file: "apify/quit-apps-2026.json",
+      filters: [["", "All"], ["outlier", "Outliers"], ["nicotine", "Nicotine"], ["alcohol", "Alcohol"], ["other", "Other habits"], ["hook", "With hook / transcript"]],
+    },
+  };
+  const cache = {};
   let data = null, loading = false;
-  const state = { q: "", type: "all", sort: store.get("cz_apify_sort") || "outlier", only: "" };
-  const FILTERS = [
-    ["", "All"],
-    ["outlier", "Outliers"],
-    ["organic", "Organic"],
-    ["app", "App promo"],
-    ["hook", "With hook / transcript"],
-  ];
+  const state = { ds: "zyn", q: "", type: "all", sort: store.get("cz_apify_sort") || "outlier", only: "" };
 
   const x = v => v == null ? "—" : (v >= 10 ? Math.round(v) : v.toFixed(1)) + "×";
 
   async function load() {
-    if (data || loading) return;
+    if (cache[state.ds]) { data = cache[state.ds]; render(); return; }
+    if (loading) return;
     loading = true;
+    const ds = state.ds;
     try {
-      const r = await fetch(DATA, { cache: "no-cache" });
+      const r = await fetch(DATASETS[ds].file, { cache: "no-cache" });
       if (!r.ok) throw new Error(r.status);
-      data = await r.json();
-      render();
+      cache[ds] = await r.json();
+      if (ds === state.ds) { data = cache[ds]; render(); }
     } catch {
       $("aEmpty").hidden = false;
       $("aEmpty").textContent = "Couldn't load the Apify snapshot — reload to retry.";
     } finally {
       loading = false;
+      if (ds !== state.ds) load();
     }
   }
 
@@ -562,14 +569,17 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
       organic: it => !it.appPromo,
       app: it => it.appPromo,
       hook: it => it.hook || it.transcript,
+      nicotine: it => it.topic === "nicotine",
+      alcohol: it => it.topic === "alcohol",
+      other: it => it.topic === "other",
     }[state.only];
     const items = data.items.filter(it =>
       (state.type === "all" || it.type === state.type) && keep(it) &&
       (!q || [it.caption, it.author, it.hook, it.transcript].some(f => (f || "").toLowerCase().includes(q))));
     const by = {
       // Creators with a measured baseline first, then everyone else by views ÷ followers.
-      outlier: (a, b) => (b.vsMedian ?? -1) - (a.vsMedian ?? -1) || b.outlierX - a.outlierX,
-      ratio: (a, b) => b.outlierX - a.outlierX,
+      outlier: (a, b) => (b.vsMedian ?? -1) - (a.vsMedian ?? -1) || (b.outlierX ?? -1) - (a.outlierX ?? -1) || b.views - a.views,
+      ratio: (a, b) => (b.outlierX ?? -1) - (a.outlierX ?? -1),
       views: (a, b) => (b.views || 0) - (a.views || 0),
       eng: (a, b) => (eng(b) || 0) - (eng(a) || 0),
       saves: (a, b) => (b.saves || 0) - (a.saves || 0),
@@ -600,7 +610,7 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
         <div class="tags">
           ${it.outlier ? `<span class="tag out">OUTLIER</span>` : ""}
           <span class="tag type">${typeTag}</span>
-          ${it.appPromo ? `<span class="tag app">App promo</span>` : ""}
+          ${it.app ? `<span class="tag app">${esc(it.app)}</span>` : it.appPromo ? `<span class="tag app">App promo</span>` : ""}
         </div>
       </td>
       <td class="num">${it.vsMedian != null ? `<span class="x">${x(it.vsMedian)}</span><span class="dim">median ${fmt(it.authorMedianViews)}</span>` : "—"}</td>
@@ -629,14 +639,17 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
     const top = items.reduce((mx, i) => Math.max(mx, i.views || 0), 0);
     const engs = items.map(eng).filter(v => v != null).sort((a, b) => a - b);
     const med = engs.length ? engs[Math.floor(engs.length / 2)] : null;
-    $("aCriteria").innerHTML = `TikTok search <b>“${esc(m.query)}”</b>, posted <b>${day(t(m.since))} – ${day(t(m.scrapedAt))}, ${new Date(t(m.scrapedAt)).getFullYear()}</b> — every result TikTok returned for it.
-      Snapshot via Apify on ${day(t(m.scrapedAt))}; not updated live. ${esc(m.outlierRule)}`;
+    const range = `posted <b>${day(t(m.since))} – ${day(t(m.scrapedAt))}, ${new Date(t(m.scrapedAt)).getFullYear()}</b>`;
+    $("aCriteria").innerHTML = (m.description
+      ? `${esc(m.description)} Only posts with 10K+ views, ${range}.`
+      : `TikTok search <b>“${esc(m.query)}”</b>, ${range} — every result TikTok returned for it.`) +
+      ` Snapshot via Apify on ${day(t(m.scrapedAt))}; not updated live. ${esc(m.outlierRule)}`;
     $("aStats").innerHTML = `
       <div class="stat"><div class="k">Finds</div><div class="v">${items.length}</div><div class="k2">${vids} video${vids === 1 ? "" : "s"} · ${items.length - vids} slideshow${items.length - vids === 1 ? "" : "s"}</div></div>
       <div class="stat"><div class="k">Outliers</div><div class="v">${outliers}</div></div>
       <div class="stat"><div class="k">Top views</div><div class="v">${fmt(top)}</div></div>
       <div class="stat"><div class="k">Median eng.</div><div class="v">${med == null ? "—" : (med * 100).toFixed(1) + "%"}</div></div>`;
-    $("aInsights").innerHTML = (m.insights || []).length ? `<p class="sect">Hook patterns in the top outliers</p><div class="insights">${m.insights.map(i => `
+    $("aInsights").innerHTML = (m.insights || []).length ? `<p class="sect">${m.description ? "Concepts worth copying" : "Hook patterns in the top outliers"}</p><div class="insights">${m.insights.map(i => `
       <div class="insight"><h3>${esc(i.title)}</h3><p>${esc(i.body)}</p>
         ${(i.examples || []).length ? `<div class="ex">${i.examples.map(ex => safeUrl(ex.url) ? `<a href="${esc(ex.url)}" target="_blank" rel="noopener">${esc(ex.label)}</a>` : "").join("")}</div>` : ""}
       </div>`).join("")}</div>` : "";
@@ -645,7 +658,7 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
   function render() {
     if (!data) return;
     renderHead();
-    $("aChips").innerHTML = FILTERS.map(([k, label]) =>
+    $("aChips").innerHTML = DATASETS[state.ds].filters.map(([k, label]) =>
       `<button class="chip" data-only="${k}" aria-pressed="${state.only === k}">${label}</button>`).join("");
     const items = filtered();
     $("aRows").innerHTML = items.map(row).join("");
@@ -655,11 +668,11 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
 
   function csv() {
     if (!data) return;
-    const cols = ["posted_at", "type", "author", "author_followers", "author_median_views", "outlier_vs_median", "views_per_follower", "views", "likes", "comments", "saves", "shares", "engagement_pct", "app_promo", "hook", "caption", "transcript", "url"];
+    const cols = ["posted_at", "type", "author", "author_followers", "author_median_views", "outlier_vs_median", "views_per_follower", "views", "likes", "comments", "saves", "shares", "engagement_pct", "app", "topic", "app_promo", "hook", "caption", "transcript", "url"];
     const q = v => { const s = v == null ? "" : String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
     const lines = [cols.join(",")].concat(filtered().map(it => [
       it.postedAt, it.type, it.author, it.authorFollowers, it.authorMedianViews, it.vsMedian, it.outlierX, it.views, it.likes, it.comments,
-      it.saves, it.shares, eng(it) == null ? "" : (eng(it) * 100).toFixed(2), it.appPromo ? "yes" : "no", it.hook, it.caption, it.transcript, it.url,
+      it.saves, it.shares, eng(it) == null ? "" : (eng(it) * 100).toFixed(2), it.app, it.topic, it.app || it.appPromo ? "yes" : "no", it.hook, it.caption, it.transcript, it.url,
     ].map(q).join(",")));
     const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
@@ -670,25 +683,43 @@ details.tx p{margin:4px 0 0;white-space:pre-wrap;max-height:220px;overflow:auto}
   }
 
   // ---------- tabs ----------
+  // "APIFY finds" and "Quit-app videos" share one panel; the tab picks the dataset.
+  const TABS = { live: "tabLive", apify: "tabApify", apps: "tabApps" };
+  const DS_FOR = { apify: "zyn", apps: "apps" };
+
+  function setDs(ds) {
+    if (ds !== state.ds || !data) {
+      state.ds = ds;
+      if (!DATASETS[ds].filters.some(([k]) => k === state.only)) state.only = "";
+      data = null;
+      $("aRows").innerHTML = "";
+      $("aEmpty").hidden = false;
+      $("aEmpty").textContent = "Loading…";
+    }
+    load();
+  }
+
   function show(view) {
-    const apify = view === "apify";
-    $("viewLive").hidden = apify;
-    $("viewApify").hidden = !apify;
-    $("tabLive").setAttribute("aria-selected", !apify);
-    $("tabApify").setAttribute("aria-selected", apify);
-    $("live").hidden = apify;
-    $("footNote").hidden = apify;
+    const live = view === "live";
+    $("viewLive").hidden = !live;
+    $("viewApify").hidden = live;
+    for (const [v, id] of Object.entries(TABS)) $(id).setAttribute("aria-selected", v === view);
+    $("live").hidden = !live;
+    $("footNote").hidden = !live;
     store.set("cz_view", view);
-    if (apify) load();
+    if (live) return;
+    $("viewApify").setAttribute("aria-labelledby", TABS[view]);
+    setDs(DS_FOR[view]);
   }
   const pick = view => {
-    history.replaceState(null, "", view === "apify" ? "#apify" : location.pathname + location.search);
+    history.replaceState(null, "", view === "live" ? location.pathname + location.search : "#" + view);
     show(view);
   };
-  $("tabLive").addEventListener("click", () => pick("live"));
-  $("tabApify").addEventListener("click", () => pick("apify"));
-  window.addEventListener("hashchange", () => show(location.hash === "#apify" ? "apify" : "live"));
-  show(location.hash === "#apify" ? "apify" : location.hash ? "live" : store.get("cz_view") || "live");
+  for (const [v, id] of Object.entries(TABS)) $(id).addEventListener("click", () => pick(v));
+  const fromHash = () => DS_FOR[location.hash.slice(1)] ? location.hash.slice(1) : null;
+  window.addEventListener("hashchange", () => show(fromHash() || "live"));
+  const saved = store.get("cz_view");
+  show(fromHash() || (location.hash ? "live" : TABS[saved] ? saved : "live"));
 
   // ---------- events ----------
   $("aQ").addEventListener("input", e => { state.q = e.target.value; render(); });
